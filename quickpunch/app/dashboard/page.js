@@ -88,7 +88,7 @@ export default function App() {
     }
   }
   return (
-    <div style={{ background: "url(/backgroundv4.png)", backgroundSize: "cover" }} className='min-h-screen min-w-screen'>
+    <div style={{ background: "url(/backgroundv5.jpg)", backgroundSize: "cover" }} className='min-h-screen min-w-screen'>
       <div className='min-h-fit flex flex-col justify-start items-center backdrop-blur-md'>
         <div className="flex flex-col justify-end items-center">
           <div className='w-screen bg-gradient-to-tr from-pink-500 to-yellow-500 h-40'></div>
