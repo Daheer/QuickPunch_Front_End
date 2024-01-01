@@ -110,7 +110,7 @@ export default function App() {
           <div className='min-w-screen h-12'></div>
         </div>
       </div>
-      <div className='min-h-fit flex pb-8 p-10 text-xl flex-wrap justify-center items-center backdrop-blur-xl'>
+      <div className='min-h-fit text-white flex pb-8 p-10 text-xl flex-wrap justify-center items-center backdrop-blur-xl'>
         <p> 👋🏾 <b>{creds}</b> </p>
       </div>
       <div className="flex flex-col justify-center items-center backdrop-blur-md">
