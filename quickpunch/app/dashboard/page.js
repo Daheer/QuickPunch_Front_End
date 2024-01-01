@@ -220,8 +220,8 @@ export default function App() {
                       <Checkbox name="realty" value="realty" color="danger" className='p-4'>
                         Realty
                       </Checkbox>
-                      <Checkbox name="technology" value="technology" color="danger" className='p-4'>
-                        Technology
+                      <Checkbox name="technologies" value="technologies" color="danger" className='p-4'>
+                        Technologies
                       </Checkbox>
                     </CheckboxGroup>
                   </div>
