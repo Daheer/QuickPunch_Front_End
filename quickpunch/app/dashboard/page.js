@@ -158,7 +158,13 @@ export default function App() {
                     )}
                   </CardBody>
                   <CardFooter className="flex-col">
-                    <p className="text-tiny text-white/80 uppercase font-bold">days</p>
+                    {
+                      days === 1 ? (
+                        <p className="text-tiny text-white/80 uppercase font-bold">day</p>
+                      ) : (
+                        <p className="text-tiny text-white/80 uppercase font-bold">days</p>
+                      )
+                    }
                   </CardFooter>
                 </Card>
                 <Card shadow="xl" className="col-span-6 transform bg-white/20 transition-transform hover:scale-110">
