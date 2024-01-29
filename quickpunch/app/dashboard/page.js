@@ -1,14 +1,16 @@
 "use client";
 
 import { redirect } from 'next/navigation';
-// import { Avatar } from '@nextui-org/react';
+import { Avatar } from '@nextui-org/react';
 import Image from 'next/image';
 import { Tabs, Tab } from "@nextui-org/react";
 import { Card, CardHeader, CardBody, CardFooter, Spinner, Button } from "@nextui-org/react";
 import { Checkbox, CheckboxGroup } from "@nextui-org/react";
+import { Accordion, AccordionItem } from "@nextui-org/react";
 import { useState, useEffect, useRef } from 'react';
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure } from "@nextui-org/react";
 import CountUp from 'react-countup';
+import { toast } from 'react-hot-toast';
 
 export default function App() {
   const [selected, setSelected] = useState("details");
@@ -19,6 +21,7 @@ export default function App() {
   const [creds, setCreds] = useState('');
   const [days, setDays] = useState(0);
   const [articles, setArticles] = useState(0);
+  const [summaries, setSummaries] = useState({});
 
   let session_details = useRef(null);
   let logged_in = null;
@@ -49,7 +52,7 @@ export default function App() {
         const difference_ms = new Date() - new Date(session_details.current.user.confirmed_at);
 
         const data = await preference_list.json();
-        setLoadSessionState(true);
+        // setLoadSessionState(true);
         setPreference(data);
         setSelectedPref(data);
 
@@ -65,6 +68,18 @@ export default function App() {
         setDays(Math.ceil(difference_ms / (1000 * 60 * 60 * 24)));
         setCreds(session_details.current.user.email);
 
+        // Code for getting the correct news article summaries for the current user!
+        const summaries = await fetch('/api/getSummaries', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ email: session_details.current.user.email })
+        });
+
+        setSummaries(await summaries.json());
+        setLoadSessionState(true);
+
       } catch (error) {
         console.error('Error during API call:', error);
       }
@@ -76,28 +91,32 @@ export default function App() {
     setPreference(selectedPref);
     if (typeof window !== 'undefined' && window.localStorage) {
       session_details.current = JSON.parse(window.localStorage.getItem('supabaseSession'));
-      const response = await fetch('/api/updatePreferences', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ email: session_details.current.user.email, preferences: selectedPref })
-      });
-      const data = await response.json();
+      toast.promise(
+        fetch('/api/updatePreferences', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ email: session_details.current.user.email, preferences: selectedPref })
+        }),
+        {
+          loading: 'Updating your preferences...',
+          success: `Successful! 👍🏾 \n\n Better curated summaries coming your way 📨`,
+          error: <b>Could not update your preferences.</b>,
+          style: {
+            background: '#27272a',
+          },
+        }
+      );
       onClose();
     }
   }
   return (
-    <div style={{ background: "url(/backgroundv5.jpg)", backgroundSize: "cover" }} className='min-h-screen min-w-screen'>
+    <div style={{ background: "url(/backgroundv5.jpg)", backgroundRepeat: "repeat-y", backgroundSize: "center" }} className='min-h-screen min-w-screen'>
       <div className='min-h-fit flex flex-col justify-start items-center backdrop-blur-md'>
         <div className="flex flex-col justify-end items-center">
           <div className='w-screen bg-gradient-to-tr from-pink-500 to-yellow-500 h-40'></div>
           <div style={{ position: "absolute", zIndex: "10" }}>
-            {/* <Avatar
-              size='lg'
-              className='w-32 h-32'
-              radius='lg'
-            /> */}
             <Image
               src='/quickpunch.jpeg'
               alt='QuickPunch'
@@ -105,7 +124,6 @@ export default function App() {
               height={192}
               className='rounded-full'
             />
-
           </div>
           <div className='min-w-screen h-12'></div>
         </div>
@@ -123,7 +141,7 @@ export default function App() {
             size='lg'
             color='danger'
           >
-            <Tab key="Details" title="About Me">
+            <Tab key="details" title="About Me">
               <div className="gap-8 xs:gap-4 mt-10 md:gap-8 lg:gap-16 grid grid-cols-12 grid-rows-2">
                 <Card isFooterBlurred className="col-span-12 flex bg-white/15 flex-col item-center">
                   <CardHeader className="flex-col">
@@ -182,6 +200,46 @@ export default function App() {
                     <p className="text-tiny text-white/80 uppercase font-bold">articles</p>
                   </CardFooter>
                 </Card>
+              </div>
+            </Tab>
+            <Tab key="view_articles" title="Today&apos;s Articles">
+              <div className='w-screen lg:w-[48rem] md:w-[36rem] sm:w-[30rem] m-10 min-h-screen'>
+                {!loadSessionState ? (
+                  <div className='flex flex-col align-items h-screen'>
+                    <Spinner color="danger" size="lg" />
+                  </div>
+                ) : (
+                  <>
+                    <Accordion variant="splitted">
+                      {Object.keys(summaries).map((category, index) => (
+                        <AccordionItem
+                          key={index.toString()}
+                          className="p-4 bg-transparent"
+                          style={{ background: "transparent" }}
+                          aria-label={category}
+                          title={category.charAt(0).toUpperCase() + category.slice(1)}
+                          startContent={
+                            <Avatar
+                              isBordered
+                              radius="lg"
+                              src={`/emojis/${category.toLowerCase()}.png`}
+                              size="lg"
+                              name={category.charAt(0).toUpperCase() + category.slice(1)}
+                            />
+                          }
+                        >
+                          <div className='flex flex-col gap-4'>
+                            {summaries[category].map((article, articleIndex) => (
+                              <div key={articleIndex} className='bg-white/25 rounded-md p-2'>
+                                {article}
+                              </div>
+                            ))}
+                          </div>
+                        </AccordionItem>
+                      ))}
+                    </Accordion>
+                  </>
+                )}
               </div>
             </Tab>
             <Tab key="preferences" title="Preferences">
@@ -254,6 +312,6 @@ export default function App() {
           </Tabs>
         </div>
       </div>
-    </div>
+    </div >
   )
 }
