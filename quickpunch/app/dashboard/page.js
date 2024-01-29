@@ -210,7 +210,7 @@ export default function App() {
                   </div>
                 ) : (
                   <>
-                    <Accordion variant="splitted" selectionMode="multiple">
+                    <Accordion variant="splitted">
                       {Object.keys(summaries).map((category, index) => (
                         <AccordionItem
                           key={index.toString()}
