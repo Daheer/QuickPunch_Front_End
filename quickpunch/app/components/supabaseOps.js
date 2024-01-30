@@ -37,7 +37,7 @@ export default function SupabaseAuth() {
   }, [])
 
   if (!session) {
-    return (<Auth supabaseClient={supabase} theme="dark" appearance={{ theme: ThemeSupa }} />)
+    return (<Auth supabaseClient={supabase} theme="dark" appearance={{ theme: ThemeSupa }} providers={[]}/>)
   } else {
     redirect('/dashboard')
   }
