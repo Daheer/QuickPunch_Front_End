@@ -3,6 +3,7 @@ import './globals.css'
 import { Providers } from './providers'
 import CircleStdFont from "next/font/local"
 import { Toaster } from "react-hot-toast";
+import { Analytics } from "@vercel/analytics/react"
 
 export const CircleStdFontStyle = CircleStdFont({ src: '../font/CircularStd-Book.ttf' })
 
@@ -24,6 +25,7 @@ export default function RootLayout({ children }) {
         <body className={CircleStdFontStyle.className}>
           <Toaster position="top-center" />
           {children}
+          <Analytics />
         </body>
       </Providers>
     </html>
